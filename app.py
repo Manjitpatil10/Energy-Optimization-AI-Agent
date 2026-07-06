@@ -50,13 +50,13 @@ if uploaded_file is not None:
     value=8.0
 )
 
-monthly_units = total * 30
-monthly_bill = monthly_units * rate
+    monthly_units = total * 30
+    monthly_bill = monthly_units * rate
 
-st.metric("Estimated Monthly Bill", f"₹ {monthly_bill:.2f}")
-co2 = monthly_units * 0.82
+    st.metric("Estimated Monthly Bill", f"₹ {monthly_bill:.2f}")
+    co2 = monthly_units * 0.82
 
-st.metric(
+    st.metric(
     "Estimated Monthly CO₂",
     f"{co2:.2f} kg"
 )
@@ -82,4 +82,4 @@ Provide:
     st.subheader("AI Analysis")
     st.write(response.text)
 else:
-    st.errer("CSV must contain a 'Daily_Energy_kWh' column.")
+  st.error("CSV must contain a 'Daily_Energy_kWh' column.")
