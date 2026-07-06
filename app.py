@@ -81,5 +81,3 @@ Provide:
 
     st.subheader("AI Analysis")
     st.write(response.text)
-    else:
-        st.error("CSV must contain a 'Daily_Energy_kWh' column.")
