@@ -17,7 +17,7 @@ api_key = st.sidebar.text_input(
     "Enter Gemini API Key",
     type="password"
 )
-
+client = None
 if api_key:
     client = genai.Client(api_key=api_key)
 st.write("Upload your electricity usage CSV file and analyze energy consumption.")
@@ -60,7 +60,7 @@ st.metric(
     "Estimated Monthly CO₂",
     f"{co2:.2f} kg"
 )
-if api_key and st.button("🤖 Analyze with Gemini"):
+if client and st.button("🤖 Analyze with Gemini"):
 
     prompt = f"""
 Analyze this energy usage data:
@@ -81,3 +81,5 @@ Provide:
 
     st.subheader("AI Analysis")
     st.write(response.text)
+else:
+    st.errer("CSV must contain a 'Daily_Energy_kWh' column.")
