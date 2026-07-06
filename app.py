@@ -42,30 +42,27 @@ if uploaded_file is not None:
         ax.set_ylabel("Daily Energy (kWh)")
         st.pyplot(fig)
 
-                total = df["Daily_Energy_kWh"].sum()
+        total = df["Daily_Energy_kWh"].sum()
 
         st.metric("Total Daily Energy", f"{total:.2f} kWh")
-
         rate = st.number_input(
-            "Electricity Rate (₹ per kWh)",
-            value=8.0
-        )
+    "Electricity Rate (₹ per kWh)",
+    value=8.0
+)
 
-        monthly_units = total * 30
-        monthly_bill = monthly_units * rate
+    monthly_units = total * 30
+    monthly_bill = monthly_units * rate
 
-        st.metric("Estimated Monthly Bill", f"₹ {monthly_bill:.2f}")
+    st.metric("Estimated Monthly Bill", f"₹ {monthly_bill:.2f}")
+    co2 = monthly_units * 0.82
 
-        co2 = monthly_units * 0.82
+    st.metric(
+    "Estimated Monthly CO₂",
+    f"{co2:.2f} kg"
+)
+if client and st.button("🤖 Analyze with Gemini"):
 
-        st.metric(
-            "Estimated Monthly CO₂",
-            f"{co2:.2f} kg"
-        )
-
-        if client and st.button("🤖 Analyze with Gemini"):
-
-            prompt = f"""
+    prompt = f"""
 Analyze this energy usage data:
 
 {df.to_string(index=False)}
@@ -77,13 +74,12 @@ Provide:
 4. Final recommendation
 """
 
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt
-            )
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
 
-            st.subheader("AI Analysis")
-            st.write(response.text)
-
-    else:
-        st.error("CSV must contain a 'Daily_Energy_kWh' column.")
+    st.subheader("AI Analysis")
+    st.write(response.text)
+else:
+  st.error("CSV must contain a Daily_Energy_kWh column.")
