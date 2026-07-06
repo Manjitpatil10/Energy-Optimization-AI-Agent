@@ -1,3 +1,5 @@
+from google import genai
+import os
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,6 +11,15 @@ st.set_page_config(
 )
 
 st.title("⚡ Energy Optimization AI Agent")
+st.sidebar.header("⚙️ Settings")
+
+api_key = st.sidebar.text_input(
+    "Enter Gemini API Key",
+    type="password"
+)
+
+if api_key:
+    client = genai.Client(api_key=api_key)
 st.write("Upload your electricity usage CSV file and analyze energy consumption.")
 
 uploaded_file = st.file_uploader(
@@ -34,5 +45,41 @@ if uploaded_file is not None:
         total = df["Daily_Energy_kWh"].sum()
 
         st.metric("Total Daily Energy", f"{total:.2f} kWh")
+        rate = st.number_input(
+    "Electricity Rate (₹ per kWh)",
+    value=8.0
+)
+
+monthly_units = total * 30
+monthly_bill = monthly_units * rate
+
+st.metric("Estimated Monthly Bill", f"₹ {monthly_bill:.2f}")
+co2 = monthly_units * 0.82
+
+st.metric(
+    "Estimated Monthly CO₂",
+    f"{co2:.2f} kg"
+)
+if api_key and st.button("🤖 Analyze with Gemini"):
+
+    prompt = f"""
+Analyze this energy usage data:
+
+{df.to_string(index=False)}
+
+Provide:
+1. Summary
+2. Highest consuming device
+3. Saving tips
+4. Final recommendation
+"""
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+
+    st.subheader("AI Analysis")
+    st.write(response.text)
     else:
         st.error("CSV must contain a 'Daily_Energy_kWh' column.")
